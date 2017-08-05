@@ -31,8 +31,8 @@ void test_csv_with_header(string& csvFile);
  */
 int main(int argc, char** argv) {
 
-  string csvFileWithoutHeader = "/home/ibrahim/projects/CSVParser/csvfile-no-header.csv";
-  string csvFileWithHeader = "/home/ibrahim/projects/CSVParser/csvfile-with-header.csv";
+  string csvFileWithoutHeader = "./csvfile-no-header.csv";
+  string csvFileWithHeader = "./csvfile-with-header.csv";
   
   test_csv_without_header(csvFileWithoutHeader);
   test_csv_with_header(csvFileWithHeader);
