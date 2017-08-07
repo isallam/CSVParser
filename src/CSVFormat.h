@@ -17,6 +17,7 @@
 #include <string>
 #include <stdexcept>
 #include <vector>
+#include <set>
 #include <memory>
 
 using namespace std;
@@ -115,57 +116,62 @@ namespace csv {
     static constexpr char US = 31;
   }
 
+  /**
+   * For now we'll only support RFC4180.
+   * In the future we'll add more format that commons-csv is supporting
+   */
   enum class FormatType {
     RFC4180,
     NONE
   };
-  
-class CSVFormat {
-  
-public:
-  static csv::CSVFormat* create(csv::FormatType parserType) {
-    CSVFormat* format = nullptr;
-    
-    switch (parserType) {
-      case csv::FormatType::RFC4180:
-        format = new CSVFormat();
-        break;
-      default:
-        break;
+
+  class CSVFormat {
+  public:
+
+    static csv::CSVFormat* create(csv::FormatType parserType) {
+      CSVFormat* format = nullptr;
+
+      switch (parserType) {
+        case csv::FormatType::RFC4180:
+          format = new CSVFormat();
+          break;
+        default:
+          break;
+      }
+
+      return format;
     }
-    
-    return format;
-  }
-  
-  
-  virtual ~CSVFormat() {};
 
-public:
-  CSVFormat() : CSVFormat(
-          csv::constants::COMMA, /* delimiter */
-          csv::constants::DOUBLE_QUOTE_CHAR, /* quoteChar */
-          csv::QuoteMode::NONE, /* quoteMode */
-          false, /* ignoreSurroundingSpaces */
-          false, /* ignoreEmptyLines */
-          false, /* firstRecordAsHeader */
-          false, /* skipHeaderRecord */
-          false, /* allowMissingColumnNames */
-          false, /* ignoreHeaderCase */
-          false, /* trim */
-          false /* trailingDelimiter */
-          ) { 
-          _recordSeparator = const_cast<char*>(csv::constants::CRLF);
-  }
-  
-  CSVFormat(const CSVFormat& orig) = delete;
+    virtual ~CSVFormat() {
+    };
 
-   void withFirstRecordAsHeader() {
-     _firstRecordAsHeader = true;
-    this->withSkipHeaderRecord();
-  }
-  
+  public:
+
+    CSVFormat() : CSVFormat(
+    csv::constants::COMMA, /* delimiter */
+    csv::constants::DOUBLE_QUOTE_CHAR, /* quoteChar */
+    csv::QuoteMode::NONE, /* quoteMode */
+    false, /* ignoreSurroundingSpaces */
+    false, /* ignoreEmptyLines */
+    false, /* firstRecordAsHeader */
+    false, /* skipHeaderRecord */
+    false, /* allowMissingColumnNames */
+    false, /* ignoreHeaderCase */
+    false, /* trim */
+    false /* trailingDelimiter */
+    ) {
+      _recordSeparator = const_cast<char*> (csv::constants::CRLF);
+    }
+
+    CSVFormat(const CSVFormat& orig) = delete;
+
+    void withFirstRecordAsHeader() {
+      _firstRecordAsHeader = true;
+      this->withSkipHeaderRecord();
+    }
+
     void withSkipHeaderRecord() {
-        _skipHeaderRecord = true;
+      _skipHeaderRecord = true;
     }
 
     /**
@@ -175,7 +181,7 @@ public:
      *         {@link IllegalArgumentException}.
      */
     bool getAllowMissingColumnNames() const {
-        return _allowMissingColumnNames;
+      return _allowMissingColumnNames;
     }
 
     /**
@@ -184,7 +190,7 @@ public:
      * @return the comment start marker, may be {@code null}
      */
     char getCommentMarker() const {
-        return _commentMarker;
+      return _commentMarker;
     }
 
     /**
@@ -193,7 +199,7 @@ public:
      * @return the delimiter character
      */
     char getDelimiter() const {
-        return _delimiter;
+      return _delimiter;
     }
 
     /**
@@ -202,7 +208,7 @@ public:
      * @return the escape character, may be {@code null}
      */
     char getEscapeCharacter() const {
-        return _escapeCharacter;
+      return _escapeCharacter;
     }
 
     /**
@@ -211,7 +217,7 @@ public:
      * @return a copy of the header array; {@code null} if disabled, the empty array if to be read from the file
      */
     vector<string> getHeader() const {
-        return _header;
+      return _header;
     }
 
     /**
@@ -220,7 +226,7 @@ public:
      * @return a copy of the header comment array; {@code null} if disabled.
      */
     vector<string> getHeaderComments() const {
-        return _headerComments;
+      return _headerComments;
     }
 
     /**
@@ -230,7 +236,7 @@ public:
      *         records.
      */
     bool getIgnoreEmptyLines() const {
-        return _ignoreEmptyLines;
+      return _ignoreEmptyLines;
     }
 
     /**
@@ -240,7 +246,7 @@ public:
      * @since 1.3
      */
     bool getIgnoreHeaderCase() const {
-        return _ignoreHeaderCase;
+      return _ignoreHeaderCase;
     }
 
     /**
@@ -249,7 +255,7 @@ public:
      * @return {@code true} if spaces around values are ignored, {@code false} if they are treated as part of the value.
      */
     bool getIgnoreSurroundingSpaces() const {
-        return _ignoreSurroundingSpaces;
+      return _ignoreSurroundingSpaces;
     }
 
     /**
@@ -263,7 +269,7 @@ public:
      * @return the String to convert to and from {@code null}. No substitution occurs if {@code null}
      */
     string getNullString() const {
-        return _nullString;
+      return _nullString;
     }
 
     /**
@@ -272,7 +278,7 @@ public:
      * @return the quoteChar character, may be {@code null}
      */
     char getQuoteCharacter() const {
-        return _quoteCharacter;
+      return _quoteCharacter;
     }
 
     /**
@@ -281,7 +287,7 @@ public:
      * @return the quote policy
      */
     csv::QuoteMode getQuoteMode() const {
-        return _quoteMode;
+      return _quoteMode;
     }
 
     /**
@@ -290,7 +296,7 @@ public:
      * @return the record separator
      */
     char* getRecordSeparator() const {
-        return _recordSeparator;
+      return _recordSeparator;
     }
 
     /**
@@ -301,14 +307,14 @@ public:
     bool getFirstRecordAsHeader() const {
       return _firstRecordAsHeader;
     }
-    
+
     /**
      * Returns whether to skip the header record.
      *
      * @return whether to skip the header record.
      */
     bool getSkipHeaderRecord() const {
-        return _skipHeaderRecord;
+      return _skipHeaderRecord;
     }
 
     /**
@@ -318,7 +324,7 @@ public:
      * @since 1.3
      */
     bool getTrailingDelimiter() const {
-        return _trailingDelimiter;
+      return _trailingDelimiter;
     }
 
     /**
@@ -327,132 +333,136 @@ public:
      * @return whether to trim leading and trailing blanks.
      */
     bool getTrim() const {
-        return _trim;
+      return _trim;
     }
-    
-  CSVFormat& withIgnoreEmptyLines(bool ignoreEmptyLines) {
-    _ignoreEmptyLines = ignoreEmptyLines;
-    return *this;
-  }
 
-private:
+    CSVFormat& withIgnoreEmptyLines(bool ignoreEmptyLines) {
+      _ignoreEmptyLines = ignoreEmptyLines;
+      return *this;
+    }
 
-  CSVFormat(char delimiter, char quoteChar, 
-          csv::QuoteMode quoteMode,bool ignoreSurroundingSpaces, 
-          bool ignoreEmptyLines, bool firstRecordAsHeader,
-          bool skipHeaderRecord, 
-          bool allowMissingColumnNames, bool ignoreHeaderCase, 
-          bool trim, bool trailingDelimiter) {
-    _delimiter = delimiter;
-    _quoteCharacter = quoteChar;
-    _quoteMode = quoteMode;
-    _ignoreSurroundingSpaces = ignoreSurroundingSpaces;
-    _allowMissingColumnNames = allowMissingColumnNames;
-    _ignoreEmptyLines = ignoreEmptyLines;
-    _firstRecordAsHeader = firstRecordAsHeader;
-    _skipHeaderRecord = skipHeaderRecord;
-    _ignoreHeaderCase = ignoreHeaderCase;
-    _trailingDelimiter = trailingDelimiter;
-    _trim = trim;
-    validate();
-  }
+  private:
 
-  CSVFormat(char delimiter, char quoteChar, csv::QuoteMode quoteMode,
-          char commentStart, char escape, bool ignoreSurroundingSpaces,
-          bool ignoreEmptyLines, char* recordSeparator, string& nullString,
-          vector<string>& headerComments, vector<string>& header, 
-          bool firstRecordAsHeader, bool skipHeaderRecord,
-          bool allowMissingColumnNames, bool ignoreHeaderCase, bool trim,
-          bool trailingDelimiter) 
-          : CSVFormat(delimiter, quoteChar, quoteMode,
-            ignoreSurroundingSpaces,
-            ignoreEmptyLines,
-            firstRecordAsHeader, skipHeaderRecord, 
-            allowMissingColumnNames, ignoreHeaderCase, 
-            trim, trailingDelimiter) {
-    _commentMarker = commentStart;
-    _escapeCharacter = escape;
-    _recordSeparator = recordSeparator;
-    _nullString = nullString;
-    _headerComments = headerComments;
-    _header = header;
-    validate();
-  }
+    CSVFormat(char delimiter, char quoteChar,
+            csv::QuoteMode quoteMode, bool ignoreSurroundingSpaces,
+            bool ignoreEmptyLines, bool firstRecordAsHeader,
+            bool skipHeaderRecord,
+            bool allowMissingColumnNames, bool ignoreHeaderCase,
+            bool trim, bool trailingDelimiter) {
+      _delimiter = delimiter;
+      _quoteCharacter = quoteChar;
+      _quoteMode = quoteMode;
+      _ignoreSurroundingSpaces = ignoreSurroundingSpaces;
+      _allowMissingColumnNames = allowMissingColumnNames;
+      _ignoreEmptyLines = ignoreEmptyLines;
+      _firstRecordAsHeader = firstRecordAsHeader;
+      _skipHeaderRecord = skipHeaderRecord;
+      _ignoreHeaderCase = ignoreHeaderCase;
+      _trailingDelimiter = trailingDelimiter;
+      _trim = trim;
+      validate();
+    }
 
-  /**
+    CSVFormat(char delimiter, char quoteChar, csv::QuoteMode quoteMode,
+            char commentStart, char escape, bool ignoreSurroundingSpaces,
+            bool ignoreEmptyLines, char* recordSeparator, string& nullString,
+            vector<string>& headerComments, vector<string>& header,
+            bool firstRecordAsHeader, bool skipHeaderRecord,
+            bool allowMissingColumnNames, bool ignoreHeaderCase, bool trim,
+            bool trailingDelimiter)
+    : CSVFormat(delimiter, quoteChar, quoteMode,
+    ignoreSurroundingSpaces,
+    ignoreEmptyLines,
+    firstRecordAsHeader, skipHeaderRecord,
+    allowMissingColumnNames, ignoreHeaderCase,
+    trim, trailingDelimiter) {
+      _commentMarker = commentStart;
+      _escapeCharacter = escape;
+      _recordSeparator = recordSeparator;
+      _nullString = nullString;
+      _headerComments = headerComments;
+      _header = header;
+      validate();
+    }
+
+    /**
      * Verifies the consistency of the parameters and throws an IllegalArgumentException if necessary.
      *
+     * TBD...
+     * 
      * @throws IllegalArgumentException
      */
     void validate() {
-      // TBD... invalidate the param similar to commons-csv
-      /**
-      
-        if (isLineBreak(delimiter)) {
+      /* 
+        if (isLineBreak(_delimiter)) {
             throw std::invalid_argument("The delimiter cannot be a line break");
         }
 
-        if (quoteCharacter != null && delimiter == quoteCharacter.charValue()) {
+        if (_delimiter == _quoteCharacter) {
             throw std::invalid_argument(
-                    "The quoteChar character and the delimiter cannot be the same ('" + quoteCharacter + "')");
+                    "The quoteChar character and the delimiter cannot be the same ('" + _quoteCharacter + "')");
         }
 
-        if (escapeCharacter != null && delimiter == escapeCharacter.charValue()) {
+        if (_delimiter == _escapeCharacter) {
             throw std::invalid_argument(
-                    "The escape character and the delimiter cannot be the same ('" + escapeCharacter + "')");
+                    "The escape character and the delimiter cannot be the same ('" + _escapeCharacter + "')");
         }
 
-        if (commentMarker != null && delimiter == commentMarker.charValue()) {
+        if (_delimiter == _commentMarker) {
             throw std::invalid_argument(
-                    "The comment start character and the delimiter cannot be the same ('" + commentMarker + "')");
+                    "The comment start character and the delimiter cannot be the same ('" + _commentMarker + "')");
         }
 
-        if (quoteCharacter != null && quoteCharacter.equals(commentMarker)) {
+        if (_quoteCharacter == _commentMarker) {
             throw std::invalid_argument(
-                    "The comment start character and the quoteChar cannot be the same ('" + commentMarker + "')");
+                    "The comment start character and the quoteChar cannot be the same ('" + _commentMarker + "')");
         }
 
-        if (escapeCharacter != null && escapeCharacter.equals(commentMarker)) {
+        if (_escapeCharacter == _commentMarker) {
             throw std::invalid_argument(
-                    "The comment start and the escape character cannot be the same ('" + commentMarker + "')");
+                    "The comment start and the escape character cannot be the same ('" + _commentMarker + "')");
         }
 
-        if (escapeCharacter == null && quoteMode == QuoteMode.NONE) {
+        if (_escapeCharacter == '\0' && _quoteMode == QuoteMode.NONE) {
             throw std::invalid_argument("No quotes mode set but no escape character is set");
         }
 
         // validate header
         if (!_header.empty()) {
-            final Set<String> dupCheck = new HashSet<>();
-            for (final String hdr : header) {
-                if (!dupCheck.add(hdr)) {
+            std::set<string> dupCheck;
+            for (unsigned i = 0; i < _header.size(); i++) {
+              string hdr = _header[i];
+                if (dupCheck.find(hdr) != dupCheck.end()) {
                     throw std::invalid_argument(
-                            "The header contains a duplicate entry: '" + hdr + "' in " + Arrays.toString(header));
+                            "The header contains a duplicate entry: '" + hdr + " in provided header keys";
+                }
+                else {
+                  dupCheck.insert(hdr);
                 }
             }
         }
        */
     }
-  
-  bool           _allowMissingColumnNames;
-  char           _commentMarker; // empty if commenting is disabled
-  char           _delimiter;
-  char           _escapeCharacter; // empty if escaping is disabled
-  vector<string> _header; // array of header column names
-  vector<string> _headerComments; // array of header comment lines
-  bool           _ignoreEmptyLines;
-  bool           _ignoreHeaderCase; // should ignore header names case
-  bool           _ignoreSurroundingSpaces; // Should leading/trailing spaces be ignored around values?
-  string         _nullString; // the string to be used for null values
-  char           _quoteCharacter; // empty if quoting is disabled
-  csv::QuoteMode _quoteMode;
-  char*          _recordSeparator; // for outputs
-  bool           _firstRecordAsHeader;
-  bool           _skipHeaderRecord;
-  bool           _trailingDelimiter;
-  bool           _trim;
 
-};
+    bool _allowMissingColumnNames;
+    char _commentMarker; // empty if commenting is disabled
+    char _delimiter;
+    char _escapeCharacter; // empty if escaping is disabled
+    vector<string> _header; // array of header column names
+    vector<string> _headerComments; // array of header comment lines
+    bool _ignoreEmptyLines;
+    bool _ignoreHeaderCase; // should ignore header names case
+    bool _ignoreSurroundingSpaces; // Should leading/trailing spaces be ignored around values?
+    string _nullString; // the string to be used for null values
+    char _quoteCharacter; // empty if quoting is disabled
+    csv::QuoteMode _quoteMode;
+    char* _recordSeparator; // for outputs
+    bool _firstRecordAsHeader;
+    bool _skipHeaderRecord;
+    bool _trailingDelimiter;
+    bool _trim;
+
+  };
 
 } // namespace csv
 

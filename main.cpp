@@ -72,21 +72,30 @@ void test_csv_with_header(string& csvFile)
   std::cout << "processing file: '" << csvFile << "'" << std::endl;
   string index("index");
   string first_name("first_name");
+  string middle_name("middle_name");
   string last_name("last_name");
+  string data_of_birth("date_of_birth");
+  string sexCol("sex");
   
   csv::CSVFormat* csvFormat = csv::CSVFormat::create(csv::FormatType::RFC4180);
   csvFormat->withFirstRecordAsHeader();
   
   csv::CSVParser csvParser(csvFile, csvFormat);
+  int count = 0;
   
   vector<CSVRecord> records = csvParser.getRecords();
   for (CSVRecord& record : records) {
       string& id = record.get(index);
       string& firstName = record.get(first_name);
+      string& middleName = record.get(middle_name);
       string& lastName = record.get(last_name);
+      string& dateOfBirth = record.get(data_of_birth);
+      string& sexType = record.get(sexCol);
       cout << index << ": " << id << ", "
               << first_name << ": " << firstName << ", "
               << last_name << ": " << lastName << ", "
               << endl;
+      count++;
   }
+  cout << "processed: " << count << " rows." << endl;
 }
